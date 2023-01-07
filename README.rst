@@ -19,6 +19,21 @@ Where is my parcel?
 A better tracking app.
 
 
+Place a file called .credentials.json` inside `where_is_my_parcel/where_is_my_parcel/backend/.credentials.json` that has your DHL and Mapbox keys, looking like this:
+```json
+{
+  "dhl": {
+    "api_key": "123456.....",
+    "api_secret": "abcdef...."
+  },
+  "mapbox": {
+    "api_key": "XYZ..."
+  }
+}
+
+``
+
+
 * Free software: MIT license
 * Documentation: https://where-is-my-parcel.readthedocs.io.
 
