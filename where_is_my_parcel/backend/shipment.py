@@ -35,17 +35,6 @@ class DHLShipment(Shipment):
         def __str__(self) -> str:
             return f"{self.timestamp}, {self.resolved_location}: {self.description}"
 
-        def to_json(self) -> dict[str, Any]:
-            return {
-                "timestamp": self.timestamp,
-                "location": self.location,
-                "description": self.description,
-                "resolved_location": self.resolved_location,
-                "latitude": self.latitude,
-                "longitude": self.longitude,
-                "successfully_resolved": self.successfully_resolved,
-            }
-
     def __init__(self, data: dict[str, Any]) -> None:
         self.data = data
         self.events = [DHLShipment.Event(event) for event in self.data["events"]]

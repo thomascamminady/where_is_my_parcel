@@ -1,8 +1,7 @@
-import http.client
-import json
 from abc import ABC, abstractmethod
 from typing import Generic
 
+from where_is_my_parcel.backend.http_connector import HTTPConnector
 from where_is_my_parcel.backend.keymanager import DHLKeyManager
 from where_is_my_parcel.backend.shipment import DHLShipment, GenericShipment
 from where_is_my_parcel.backend.shipment_tracker_answer import (
@@ -25,25 +24,21 @@ class ShipmentTracker(ABC, Generic[GenericShipment]):
         pass
 
 
-class DHLShipmentTracker(ShipmentTracker[DHLShipment]):
+class DHLShipmentTracker(ShipmentTracker[DHLShipment], HTTPConnector):
     def __init__(self):
         self._key_manager = DHLKeyManager()
-        self._headers = {
-            "DHL-API-Key": self._key_manager.api_key,
-            "DHL-API-Secret": self._key_manager.secret,
-            "Content-Type": "application/json",
-        }
-        self._payload = ""
+        super().__init__(
+            "api-eu.dhl.com",
+            {
+                "DHL-API-Key": self._key_manager.api_key,
+                "DHL-API-Secret": self._key_manager.secret,
+                "Content-Type": "application/json",
+            },
+            "GET",
+            "",
+        )
 
     def _track(self, tracking_number: str) -> DHLShipmentTrackerAnswer:
-        conn = http.client.HTTPSConnection("api-eu.dhl.com")
-
-        conn.request(
-            "GET",
-            f"/track/shipments?trackingNumber={tracking_number}",
-            self._payload,
-            self._headers,
-        )
-        res = conn.getresponse()
-        data = json.loads(res.read().decode("utf-8"))
+        path = f"/track/shipments?trackingNumber={tracking_number}"
+        data = self._request(path)
         return DHLShipmentTrackerAnswer(data)

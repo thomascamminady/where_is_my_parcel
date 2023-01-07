@@ -29,9 +29,9 @@ class APIWithSecretKeyManager(APIKeyManager):
 
 class DHLKeyManager(APIWithSecretKeyManager):
     def __init__(self):
-        super().__init__("where_is_my_parcel/.credentials.json", "dhl")
+        super().__init__("where_is_my_parcel/backend/.credentials.json", "dhl")
 
 
 class MapboxKeyManager(APIKeyManager):
     def __init__(self):
-        super().__init__("where_is_my_parcel/.credentials.json", "mapbox")
+        super().__init__("where_is_my_parcel/backend/.credentials.json", "mapbox")
