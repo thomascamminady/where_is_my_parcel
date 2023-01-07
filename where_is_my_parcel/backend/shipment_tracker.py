@@ -1,13 +1,14 @@
-from abc import ABC, abstractmethod
 import http.client
 import json
+from abc import ABC, abstractmethod
 from typing import Generic
+
 from where_is_my_parcel.backend.keymanager import DHLKeyManager
+from where_is_my_parcel.backend.shipment import DHLShipment, GenericShipment
 from where_is_my_parcel.backend.shipment_tracker_answer import (
-    ShipmentTrackerAnswer,
     DHLShipmentTrackerAnswer,
+    ShipmentTrackerAnswer,
 )
-from where_is_my_parcel.backend.shipment import GenericShipment, DHLShipment
 
 
 class ShipmentTracker(ABC, Generic[GenericShipment]):

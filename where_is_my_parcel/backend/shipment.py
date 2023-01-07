@@ -1,6 +1,8 @@
 from abc import ABC
 from typing import Any, TypeVar
+
 import pandas as pd
+
 from where_is_my_parcel.backend.address_resolver import AddressResolver
 
 

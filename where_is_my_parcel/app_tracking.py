@@ -3,10 +3,10 @@ A flask app that provides the API to the tracking service.
 We provide only one route: /track
 The route takes a tracking ID and returns the tracking information.
 """
-from where_is_my_parcel.shipment_tracker import DHLShipmentTracker
-from where_is_my_parcel.exposed_shipment_object import ExposedDHLShipmentObject
 from flask import Flask
 
+from where_is_my_parcel.exposed_shipment_object import ExposedDHLShipmentObject
+from where_is_my_parcel.shipment_tracker import DHLShipmentTracker
 
 app = Flask(__name__)
 

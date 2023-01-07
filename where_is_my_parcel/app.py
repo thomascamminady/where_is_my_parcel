@@ -14,9 +14,8 @@
 
 """
 
-from flask import Flask
-
 import folium
+from flask import Flask
 
 app = Flask(__name__)
 

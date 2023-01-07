@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Any, Generic
+
 from where_is_my_parcel.backend.shipment import DHLShipment, GenericShipment
 
 

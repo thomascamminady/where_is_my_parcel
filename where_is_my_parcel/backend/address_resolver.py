@@ -1,7 +1,8 @@
-from where_is_my_parcel.backend.address_resolver_answer import AddressResolverAnswer
-from where_is_my_parcel.backend.keymanager import MapboxKeyManager
 import http.client
 import json
+
+from where_is_my_parcel.backend.address_resolver_answer import AddressResolverAnswer
+from where_is_my_parcel.backend.keymanager import MapboxKeyManager
 
 
 class AddressResolver(object):
