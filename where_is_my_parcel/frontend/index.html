@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Tracking History</title>
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet'>
+  <link rel="stylesheet" type="text/css" href="assets/styles/style.css">
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+
+</head>
+
+<body>
+
+  <form id="form">
+    <label for="trackingId">Tracking ID:</label>
+    <input type="text" id="trackingId" name="trackingId">
+    <button type="submit">Submit</button>
+  </form>
+  <div id="map" style="width: 60%; height: 600px"></div>
+
+
+
+  <div id="output"></div>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
+
+  <script>
+    function initMap(events) {
+      coordinates = events.map(event => [event.longitude, event.latitude]);
+
+      mapboxgl.accessToken = 'pk.eyJ1IjoiZHJ0YyIsImEiOiJjbGNseGRxMHcxOHZ0M3FwNjZhZHFwZG1wIn0.jJgvr4gqyktd9DssKOG9Sw';
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/light-v10',
+        zoom: 1.77,
+        center: [events[0].longitude, events[0].latitude],
+        bounds: coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[
+            0],
+          coordinates[0]))
+      });
+
+      // Add marker for every event in events using the latitude and longitude
+      const geojson = {
+        'type': 'FeatureCollection',
+        'features': [{
+          'type': 'Feature',
+          'properties': {},
+          'geometry': {
+            'coordinates': coordinates.reverse(),
+            'type': 'LineString'
+          }
+        }]
+      };
+      map.on('load', () => {
+        map.addSource('line', {
+          type: 'geojson',
+          data: geojson
+        });
+
+        // Add a marker for every coordinate along the line
+        // Have every marker use the latitude and longitude
+        // as text in the marker
+        geojson.features[0].geometry.coordinates.forEach((coord, index) => {
+          const marker = new mapboxgl.Marker({
+            color: 'blue'
+          }).setLngLat(coord).setPopup(new mapboxgl.Popup({
+            offset: 25
+          }).setHTML('<h3>' + coord[0] + ', ' + coord[1] + '</h3>')).addTo(map);
+        });
+
+
+
+
+        // add a line layer without line-dasharray defined to fill the gaps in the dashed line
+        map.addLayer({
+          type: 'line',
+          source: 'line',
+          id: 'line-background',
+          paint: {
+            'line-color': 'blue',
+            'line-width': 6,
+            'line-opacity': 0.4
+          }
+        });
+
+        // add a line layer with line-dasharray set to the first value in dashArraySequence
+        map.addLayer({
+          type: 'line',
+          source: 'line',
+          id: 'line-dashed',
+          paint: {
+            'line-color': 'blue',
+            'line-width': 6,
+            'line-dasharray': [0, 4, 3]
+          }
+
+
+
+
+        });
+
+        // technique based on https://jsfiddle.net/2mws8y3q/
+        // an array of valid line-dasharray values, specifying the lengths of the alternating dashes and gaps that form the dash pattern
+        const dashArraySequence = [
+          [0, 4, 3],
+          [0.5, 4, 2.5],
+          [1, 4, 2],
+          [1.5, 4, 1.5],
+          [2, 4, 1],
+          [2.5, 4, 0.5],
+          [3, 4, 0],
+          [0, 0.5, 3, 3.5],
+          [0, 1, 3, 3],
+          [0, 1.5, 3, 2.5],
+          [0, 2, 3, 2],
+          [0, 2.5, 3, 1.5],
+          [0, 3, 3, 1]
+        ];
+
+        let step = 0;
+
+        function animateDashArray(timestamp) {
+          // Update line-dasharray using the next value in dashArraySequence. The
+          // divisor in the expression `timestamp / 50` controls the animation speed.
+          const newStep = parseInt(
+            (timestamp / 250) % dashArraySequence.length
+          );
+
+          if (newStep !== step) {
+            map.setPaintProperty(
+              'line-dashed',
+              'line-dasharray',
+              dashArraySequence[step]
+            );
+            step = newStep;
+          }
+
+          // Request the next frame of the animation.
+          requestAnimationFrame(animateDashArray);
+        }
+
+        // start the animation
+        animateDashArray(0);
+      });
+
+
+
+    }
+
+
+    async function getTrackingHistory(trackingId) {
+      const response = await fetch(`http://127.0.0.1:8000/track/${trackingId}`);
+      const data = await response.json();
+      return data;
+    }
+
+    function transformData(data) {
+      return data.map(event => ({
+        timestamp: event.timestamp,
+        location: event.location,
+        description: event.description,
+        resolved_location: event.resolved_location,
+        latitude: event.latitude,
+        longitude: event.longitude
+      }));
+    }
+
+    function displayEvents(events) {
+      const table = document.createElement('table');
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = `
+        <th>Timestamp</th>
+        <th>Location</th>
+        <th>Description</th>
+      `;
+      table.appendChild(headerRow);
+
+      for (const event of events) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${event.timestamp}</td>
+          <td>${event.location}</td>
+          <td>${event.description}</td>
+        `;
+        table.appendChild(row);
+      }
+
+      const output = document.getElementById('output');
+      output.innerHTML = '';
+      output.appendChild(table);
+    }
+
+    const form = document.getElementById('form');
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const trackingId = document.getElementById('trackingId').value;
+      getTrackingHistory(trackingId).then(data => {
+        const transformedData = transformData(data["events"]);
+        console.log(transformedData);
+        displayEvents(transformedData);
+        initMap(transformedData);
+      });
+    });
+
+  </script>
+
+</body>
+
+</html>
