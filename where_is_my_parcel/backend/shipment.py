@@ -13,11 +13,11 @@ class Shipment(ABC):
 class DHLShipment(Shipment):
     class Event:
         def __init__(self, data: dict[str, Any]) -> None:
-            self._data = data
+
             try:
-                self.timestamp = pd.to_datetime(self._data["timestamp"])  # type: ignore
-                self.location = self._data["location"]["address"]["addressLocality"]
-                self.description = self._data["description"]
+                self.timestamp = pd.to_datetime(data["timestamp"])  # type: ignore
+                self.location = data["location"]["address"]["addressLocality"]
+                self.description = data["description"]
                 address = AddressResolver().resolve(self.location)
                 self.resolved_location = address.name
                 self.latitude = address.latitude
