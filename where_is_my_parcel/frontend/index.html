@@ -2,19 +2,15 @@
 <html>
 
 <head>
-
   <title>Tracking History</title>
-  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" />
   <!-- <link rel="stylesheet" type="text/css" href="assets/styles/style.css"> -->
-  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
+  <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
   <style>
     /* body {
     background-color: #FFCC00;
 } */
-
-
-
 
     #form {
       font-family: 'Source Sans Pro', sans-serif;
@@ -33,7 +29,7 @@
       margin-bottom: 10px;
     }
 
-    #form input[type="text"] {
+    #form input[type='text'] {
       width: 70%;
       height: 30px;
       font-size: 16px;
@@ -43,7 +39,7 @@
       margin-bottom: 20px;
     }
 
-    #form button[type="submit"] {
+    #form button[type='submit'] {
       width: 30%;
       height: 30px;
       font-size: 18px;
@@ -53,7 +49,7 @@
       border-radius: 5px;
     }
 
-    #form button[type="submit"]:hover {
+    #form button[type='submit']:hover {
       background-color: #666666;
     }
 
@@ -70,7 +66,6 @@
       border: 2px solid #333333;
       border-radius: 10px;
       padding: 20px;
-
     }
 
     th {
@@ -102,33 +97,26 @@
       transform: translate(-50%, -50%);
     }
 
-
-
-
     /* * {
   color: #D40511;
 } */
-
   </style>
 </head>
 
 <body>
-
   <form id="form">
     <label for="trackingId">Tracking ID:</label>
-    <input type="text" id="trackingId" name="trackingId">
+    <input type="text" id="trackingId" name="trackingId" />
     <button type="submit">Submit</button>
   </form>
   <div id="map" style="width: 60%; height: 600px"></div>
 
-
-
   <div id="output"></div>
-  <script src='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
 
   <script>
     function initMap(events) {
-      coordinates = events.map(event => [event.longitude, event.latitude]);
+      coordinates = events.map((event) => [event.longitude, event.latitude]);
 
       // Open the file where_is_my_parcel/backend/.credentials.json
       // and copy the value of the key "mapbox_access_token"
@@ -141,27 +129,28 @@
         style: 'mapbox://styles/mapbox/light-v10',
         zoom: 1.77,
         center: [events[0].longitude, events[0].latitude],
-        bounds: coordinates.reduce((bounds, coord) => bounds.extend(coord), new mapboxgl.LngLatBounds(coordinates[
-            0],
-          coordinates[0]))
+        bounds: coordinates.reduce(
+          (bounds, coord) => bounds.extend(coord),
+          new mapboxgl.LngLatBounds(coordinates[0], coordinates[0])
+        ),
       });
 
       // Add marker for every event in events using the latitude and longitude
       const geojson = {
-        'type': 'FeatureCollection',
-        'features': [{
-          'type': 'Feature',
-          'properties': {},
-          'geometry': {
-            'coordinates': coordinates.reverse(),
-            'type': 'LineString'
-          }
-        }]
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            coordinates: coordinates.reverse(),
+            type: 'LineString',
+          },
+        }, ],
       };
       map.on('load', () => {
         map.addSource('line', {
           type: 'geojson',
-          data: geojson
+          data: geojson,
         });
 
         // Add a marker for every coordinate along the line
@@ -169,14 +158,16 @@
         // as text in the marker
         geojson.features[0].geometry.coordinates.forEach((coord, index) => {
           const marker = new mapboxgl.Marker({
-            color: 'blue'
-          }).setLngLat(coord).setPopup(new mapboxgl.Popup({
-            offset: 25
-          }).setHTML('<h3>' + coord[0] + ', ' + coord[1] + '</h3>')).addTo(map);
+              color: 'blue',
+            })
+            .setLngLat(coord)
+            .setPopup(
+              new mapboxgl.Popup({
+                offset: 25,
+              }).setHTML('<h3>' + coord[0] + ', ' + coord[1] + '</h3>')
+            )
+            .addTo(map);
         });
-
-
-
 
         // add a line layer without line-dasharray defined to fill the gaps in the dashed line
         map.addLayer({
@@ -186,8 +177,8 @@
           paint: {
             'line-color': 'blue',
             'line-width': 6,
-            'line-opacity': 0.4
-          }
+            'line-opacity': 0.4,
+          },
         });
 
         // add a line layer with line-dasharray set to the first value in dashArraySequence
@@ -198,12 +189,8 @@
           paint: {
             'line-color': 'blue',
             'line-width': 6,
-            'line-dasharray': [0, 4, 3]
-          }
-
-
-
-
+            'line-dasharray': [0, 4, 3],
+          },
         });
 
         // technique based on https://jsfiddle.net/2mws8y3q/
@@ -221,7 +208,7 @@
           [0, 1.5, 3, 2.5],
           [0, 2, 3, 2],
           [0, 2.5, 3, 1.5],
-          [0, 3, 3, 1]
+          [0, 3, 3, 1],
         ];
 
         let step = 0;
@@ -249,26 +236,24 @@
         // start the animation
         animateDashArray(0);
       });
-
-
-
     }
 
-
     async function getTrackingHistory(trackingId) {
-      const response = await fetch(`http://127.0.0.1:8000/track/${trackingId}`);
+      const response = await fetch(
+        `http://127.0.0.1:8000/track/${trackingId}`
+      );
       const data = await response.json();
       return data;
     }
 
     function transformData(data) {
-      return data.map(event => ({
+      return data.map((event) => ({
         timestamp: event.timestamp,
         location: event.location,
         description: event.description,
         resolved_location: event.resolved_location,
         latitude: event.latitude,
-        longitude: event.longitude
+        longitude: event.longitude,
       }));
     }
 
@@ -298,19 +283,17 @@
     }
 
     const form = document.getElementById('form');
-    form.addEventListener('submit', event => {
+    form.addEventListener('submit', (event) => {
       event.preventDefault();
       const trackingId = document.getElementById('trackingId').value;
-      getTrackingHistory(trackingId).then(data => {
-        const transformedData = transformData(data["events"]);
+      getTrackingHistory(trackingId).then((data) => {
+        const transformedData = transformData(data['events']);
         console.log(transformedData);
         displayEvents(transformedData);
         initMap(transformedData);
       });
     });
-
   </script>
-
 </body>
 
 </html>

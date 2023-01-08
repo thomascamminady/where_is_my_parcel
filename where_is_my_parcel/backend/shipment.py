@@ -1,8 +1,6 @@
 from abc import ABC
 from typing import Any, TypeVar
 
-import pandas as pd
-
 from where_is_my_parcel.backend.address_resolver import AddressResolver
 
 
@@ -15,7 +13,7 @@ class DHLShipment(Shipment):
         def __init__(self, data: dict[str, Any]) -> None:
 
             try:
-                self.timestamp = pd.to_datetime(data["timestamp"])  # type: ignore
+                self.timestamp = data["timestamp"]
                 self.location = data["location"]["address"]["addressLocality"]
                 self.description = data["description"]
                 address = AddressResolver().resolve(self.location)
