@@ -5,10 +5,111 @@
 
   <title>Tracking History</title>
   <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet'>
-  <link rel="stylesheet" type="text/css" href="assets/styles/style.css">
+  <!-- <link rel="stylesheet" type="text/css" href="assets/styles/style.css"> -->
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css' rel='stylesheet' />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.12.0/mapbox-gl.js"></script>
+  <style>
+    /* body {
+    background-color: #FFCC00;
+} */
 
+
+
+
+    #form {
+      font-family: 'Source Sans Pro', sans-serif;
+      width: 500px;
+      margin: 50px auto;
+      text-align: center;
+      border: 2px solid #333333;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    #form label {
+      font-size: 18px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    #form input[type="text"] {
+      width: 70%;
+      height: 30px;
+      font-size: 16px;
+      border: 1px solid #333333;
+      border-radius: 5px;
+      padding: 0 10px;
+      margin-bottom: 20px;
+    }
+
+    #form button[type="submit"] {
+      width: 30%;
+      height: 30px;
+      font-size: 18px;
+      background-color: #333333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #form button[type="submit"]:hover {
+      background-color: #666666;
+    }
+
+    #output {
+      margin: 20px 0;
+      font-size: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-family: 'Source Sans Pro', sans-serif;
+      border: 2px solid #333333;
+      border-radius: 10px;
+      padding: 20px;
+
+    }
+
+    th {
+      text-align: left;
+      background-color: #333333;
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      border: 1px solid #333333;
+      padding: 10px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    map {
+      border: 5px solid;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 60%;
+      height: 600px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+
+
+
+    /* * {
+  color: #D40511;
+} */
+
+  </style>
 </head>
 
 <body>
@@ -29,7 +130,12 @@
     function initMap(events) {
       coordinates = events.map(event => [event.longitude, event.latitude]);
 
+      // Open the file where_is_my_parcel/backend/.credentials.json
+      // and copy the value of the key "mapbox_access_token"
+      // and paste it below
+
       mapboxgl.accessToken = 'pk.eyJ1IjoiZHJ0YyIsImEiOiJjbGNseGRxMHcxOHZ0M3FwNjZhZHFwZG1wIn0.jJgvr4gqyktd9DssKOG9Sw';
+
       const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/light-v10',
