@@ -30,10 +30,13 @@ Place a file called ``.credentials.json`` inside ``where_is_my_parcel/where_is_m
       },
       "mapbox": {
         "api_key": "XYZ..."
-      }    
+      }
     }
 
 
+On the server, run two screens, one for the backend, one for the frontend.
+For the backend run ``nohup poetry run python uvicorn where_is_my_parcel.backend_app:app --host 192.168.2.122 --port 8000 --reload &``.
+For the frontend run ``nohup nodejs frontend_app.js &``.
 
 
 
